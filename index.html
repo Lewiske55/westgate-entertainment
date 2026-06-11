@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="description" content="Watch top movies & TV show trailers, shop tech accessories, print documents and access digital services at Westgate Entertainment — Nakuru, Kenya.">
+  <meta name="keywords" content="Movies, TV Series, Phone Accessories, PesaPal Payment, Nakuru Cyber Café, Print, Scan, M-PESA, Gaming, CCTV, Graphic Design, KRA, NTSA, eCitizen">
+  <meta property="og:title" content="Westgate Entertainment — Nakuru">
+  <meta property="og:description" content="Movies, TV trailers, tech accessories, gaming, CCTV & cyber services in Nakuru, Kenya.">
+  <title>Westgate Entertainment — Nakuru</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#10b981', 600: '#059669' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Gaming neon effects ── */
+    .gaming-card { position: relative; overflow: hidden; }
+    .gaming-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(16,185,129,0.10) 100%);
+      z-index: 0;
+    }
+    .neon-border { box-shadow: 0 0 15px rgba(124,58,237,0.4), 0 0 30px rgba(124,58,237,0.2); }
+    .neon-green  { box-shadow: 0 0 15px rgba(16,185,129,0.5), 0 0 30px rgba(16,185,129,0.25); }
+    @keyframes rgb-pulse {
+      0%,100% { box-shadow: 0 0 10px #7c3aed, 0 0 20px #7c3aed40; }
+      33%     { box-shadow: 0 0 10px #10b981, 0 0 20px #10b98140; }
+      66%     { box-shadow: 0 0 10px #ef4444, 0 0 20px #ef444440; }
+    }
+    .rgb-glow { animation: rgb-pulse 3s ease-in-out infinite; }
+    /* ── Upload doc form ── */
+    .doc-upload-zone { transition: all 0.2s; }
+    .doc-upload-zone.active { border-color: #10b981; background: rgba(16,185,129,0.05); }
+    /* ── Service icon hover ── */
+    .service-icon-wrap { transition: transform 0.3s, box-shadow 0.3s; }
+    .service-card:hover .service-icon-wrap { transform: scale(1.1) rotate(-5deg); }
+    /* ── Pricing cards ── */
+    .pricing-featured { background: linear-gradient(135deg,#059669,#10b981); }
+    /* ── CCTV shield pulse ── */
+    @keyframes shield-pulse { 0%,100%{opacity:1}50%{opacity:0.6} }
+    .shield-pulse { animation: shield-pulse 2s ease-in-out infinite; }
+    /* ── Section divider ── */
+    .section-divider { height: 3px; background: linear-gradient(90deg, transparent, #10b981, transparent); border-radius: 2px; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans min-h-screen flex flex-col">
+
+  <!-- ═══ NAVBAR ═══════════════════════════════════════════════════════════ -->
+  <nav id="navbar" class="glass-nav sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex-shrink-0 flex items-center cursor-pointer gap-2" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+          <i class="ph-fill ph-film-strip text-brand-500 text-3xl"></i>
+          <span class="font-bold text-xl tracking-tight text-gray-900 dark:text-white">Westgate Ent</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-1">
+          <a href="#nowshowing" class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Trending</a>
+          <a href="#movies"     class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Movies</a>
+          <a href="#tvseries"   class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">TV Series</a>
+          <div class="relative" id="genreNavWrapper">
+            <button id="genreNavBtn" onclick="GenreNav.toggle()"
+              class="flex items-center gap-1 hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">
+              <i class="ph-fill ph-tag text-brand-500"></i> Genres
+              <i class="ph ph-caret-down text-xs transition-transform duration-200" id="genreNavCaret"></i>
+            </button>
+            <div id="genreNavPanel"
+              class="hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[560px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-[200] p-5 overflow-hidden">
+              <div class="flex gap-2 mb-4">
+                <button id="gnTabMovie" onclick="GenreNav.switchTab('movie')"
+                  class="gn-tab flex-1 py-2 rounded-xl text-sm font-bold bg-brand-500 text-white transition">🎬 Movies</button>
+                <button id="gnTabTV" onclick="GenreNav.switchTab('tv')"
+                  class="gn-tab flex-1 py-2 rounded-xl text-sm font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">📺 TV Series</button>
+              </div>
+              <div id="gnMovieGenres" class="flex flex-wrap gap-2 max-h-52 overflow-y-auto scrollbar-thin pr-1">
+                <div class="text-xs text-gray-400 py-4 w-full text-center">Loading genres…</div>
+              </div>
+              <div id="gnTVGenres" class="hidden flex-wrap gap-2 max-h-52 overflow-y-auto scrollbar-thin pr-1">
+                <div class="text-xs text-gray-400 py-4 w-full text-center">Loading genres…</div>
+              </div>
+            </div>
+          </div>
+          <a href="#gaming"    class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Gaming</a>
+          <a href="#services"  class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Services</a>
+          <a href="#product"   class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Products</a>
+          <a href="#pricing"   class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Pricing</a>
+          <a href="#contact"   class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="WatchlistManager.openModal()" class="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition" aria-label="My Watchlist">
+            <i class="ph ph-bookmark-simple text-xl"></i>
+            <span id="watchlistBadge" class="hidden absolute -top-0.5 -right-0.5 bg-brand-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none"></span>
+          </button>
+          <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+            <i class="ph ph-moon text-xl dark:hidden"></i>
+            <i class="ph ph-sun text-xl hidden dark:block text-yellow-400"></i>
+          </button>
+          <button onclick="toggleMobileMenu()" class="md:hidden inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none">
+            <i class="ph ph-list text-2xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="md:hidden hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 absolute w-full left-0 shadow-lg z-50">
+      <div class="px-4 pt-2 pb-4 space-y-1">
+        <a href="#nowshowing" onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">🔥 Trending</a>
+        <a href="#movies"   onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">🎥 Movies</a>
+        <a href="#tvseries" onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">📺 TV Series</a>
+        <div>
+          <button onclick="GenreNav.toggleMobile()" class="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <span>🏷️ Genres</span>
+            <i class="ph ph-caret-down text-sm" id="mobileGenreCaret"></i>
+          </button>
+          <div id="mobileGenrePanel" class="hidden px-3 pt-2 pb-3 space-y-3">
+            <div class="flex gap-2 mb-2">
+              <button id="mgnTabMovie" onclick="GenreNav.switchMobileTab('movie')"
+                class="mgn-tab flex-1 py-1.5 rounded-lg text-xs font-bold bg-brand-500 text-white transition">🎬 Movies</button>
+              <button id="mgnTabTV" onclick="GenreNav.switchMobileTab('tv')"
+                class="mgn-tab flex-1 py-1.5 rounded-lg text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition">📺 TV</button>
+            </div>
+            <div id="mgnMovieGenres" class="flex flex-wrap gap-1.5"></div>
+            <div id="mgnTVGenres" class="hidden flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+        <a href="#gaming"   onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">🎮 Gaming Hub</a>
+        <a href="#services" onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">🖨️ Services</a>
+        <a href="#cctv"     onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">📷 CCTV</a>
+        <a href="#product"  onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">🛍️ Products</a>
+        <a href="#pricing"  onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">💰 Pricing</a>
+        <a href="#contact"  onclick="UI.closeMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition">📞 Contact</a>
+        <button onclick="UI.closeMobileMenu(); WatchlistManager.openModal()" class="w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-2">
+          🔖 My Watchlist <span id="watchlistBadgeMobile" class="bg-brand-500 text-white text-xs font-bold px-2 py-0.5 rounded-full hidden"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ══════════════════════════════════════════════════════════════ -->
+  <header class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-14 md:py-20 px-4 text-center relative overflow-hidden">
+    <div class="absolute -top-20 -left-20 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative z-10">
+      <p class="text-brand-500 text-sm font-semibold tracking-widest uppercase mb-3">Nakuru's Premier Entertainment Hub</p>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+        Movie Shop &amp; Cyber Café
+      </h1>
+      <p class="text-base md:text-lg text-gray-300 max-w-2xl mx-auto mb-8">
+        Movies · TV · Gaming · CCTV · Printing · eCitizen · Graphic Design<br class="hidden md:block"> — All under one roof in Nakuru.
+      </p>
+      <!-- Search bar — rendered above all content -->
+      <div class="max-w-xl mx-auto relative" id="searchWrapper" style="z-index:300">
+        <div class="relative">
+          <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl pointer-events-none"></i>
+          <input type="text" id="searchBox" placeholder="Search movies or TV shows…" oninput="handleSearch()" autocomplete="off"
+            class="w-full pl-12 pr-12 py-4 rounded-full bg-white/10 border border-gray-600 focus:border-brand-500 focus:outline-none text-white placeholder-gray-400 transition backdrop-blur-sm text-sm sm:text-base">
+          <button onclick="SearchDropdown.clear()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition">
+            <i class="ph ph-x text-lg"></i>
+          </button>
+        </div>
+        <!-- Live results dropdown — z-index ensures it's above everything -->
+        <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden max-h-[70vh] overflow-y-auto" style="z-index:400">
+          <div id="searchDropdownInner"></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Type to search — click any result to view details &amp; trailer</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ══════════════════════════════════════════════════════════════ -->
+  <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 space-y-20">
+
+    <!-- TRENDING / NOW SHOWING / UPCOMING — injected by ContentManager.initNowShowingSection() -->
+
+    <!-- MOVIES -->
+    <section id="movies" class="scroll-mt-24">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+          <i class="ph-fill ph-popcorn text-brand-500"></i> <span id="movieSectionHeading">Popular Movies</span>
+        </h2>
+        <span class="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">Click poster for details &amp; trailer</span>
+      </div>
+      <div id="movieList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"></div>
+      <div id="movieLoader" class="loader hidden"></div>
+      <div id="moviePagination"></div>
+    </section>
+
+    <!-- TV SERIES -->
+    <section id="tvseries" class="scroll-mt-24">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+          <i class="ph-fill ph-television text-brand-500"></i> <span id="tvSectionHeading">Popular TV Series</span>
+        </h2>
+      </div>
+      <div id="tvList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"></div>
+      <div id="tvLoader" class="loader hidden"></div>
+      <div id="tvPagination"></div>
+    </section>
+
+    <!-- ═══ GAMING HUB ═══════════════════════════════════════════════════════ -->
+    <section id="gaming" class="scroll-mt-24">
+      <div class="text-center mb-10">
+        <span class="inline-block bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3">🎮 Entertainment</span>
+        <h2 class="text-2xl sm:text-3xl font-bold mb-2">Gaming Hub</h2>
+        <p class="text-gray-600 dark:text-gray-400">Experience next-gen gaming on our PS5 setup — FIFA, Call of Duty, Racing & more.</p>
+      </div>
+
+      <!-- Featured gaming banner -->
+      <div class="gaming-card bg-gradient-to-br from-gray-900 via-purple-950 to-gray-900 rounded-3xl p-6 sm:p-10 mb-8 border border-purple-800/40 rgb-glow relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+          <div class="flex-1 text-center md:text-left">
+            <div class="flex items-center justify-center md:justify-start gap-3 mb-4">
+              <span class="text-5xl">🕹️</span>
+              <div>
+                <h3 class="text-white text-2xl sm:text-3xl font-extrabold">PS5 Gaming Sessions</h3>
+                <p class="text-purple-300 text-sm">Latest titles — multiplayer & single player</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap justify-center md:justify-start gap-2 mb-6">
+              <span class="bg-purple-800/60 text-purple-200 text-xs font-bold px-3 py-1 rounded-full border border-purple-700">⚽ FIFA 25</span>
+              <span class="bg-gray-800/60 text-gray-200 text-xs font-bold px-3 py-1 rounded-full border border-gray-700">🔫 Call of Duty</span>
+              <span class="bg-red-900/60 text-red-200 text-xs font-bold px-3 py-1 rounded-full border border-red-800">🏎️ Racing Games</span>
+              <span class="bg-blue-900/60 text-blue-200 text-xs font-bold px-3 py-1 rounded-full border border-blue-800">🥊 WWE 2K25</span>
+              <span class="bg-green-900/60 text-green-200 text-xs font-bold px-3 py-1 rounded-full border border-green-800">🏀 NBA 2K25</span>
+              <span class="bg-yellow-900/60 text-yellow-200 text-xs font-bold px-3 py-1 rounded-full border border-yellow-800">+ More</span>
+            </div>
+            <a href="https://wa.me/254740513137?text=Hi!%20I'd%20like%20to%20book%20a%20gaming%20session."
+              target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 px-8 rounded-xl transition shadow-xl text-sm hover:shadow-brand-500/30">
+              <i class="ph-fill ph-game-controller text-lg"></i> Book a Session
+            </a>
+          </div>
+          <div class="flex-shrink-0 grid grid-cols-2 gap-3">
+            <div class="bg-gray-800/60 rounded-xl p-4 text-center border border-purple-800/30 backdrop-blur-sm">
+              <p class="text-3xl font-extrabold text-purple-400">KES 100</p>
+              <p class="text-gray-400 text-xs mt-1">Per Hour</p>
+              <p class="text-gray-500 text-xs">Single Player</p>
+            </div>
+            <div class="bg-gray-800/60 rounded-xl p-4 text-center border border-brand-500/30 backdrop-blur-sm">
+              <p class="text-3xl font-extrabold text-brand-500">KES 150</p>
+              <p class="text-gray-400 text-xs mt-1">Per Hour</p>
+              <p class="text-gray-500 text-xs">Multiplayer</p>
+            </div>
+            <div class="bg-gray-800/60 rounded-xl p-4 text-center border border-gray-700 backdrop-blur-sm col-span-2">
+              <p class="text-2xl font-extrabold text-yellow-400">KES 400</p>
+              <p class="text-gray-400 text-xs mt-1">All-Day Pass</p>
+              <p class="text-gray-500 text-xs">6 Hours · Best Value</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game tiles -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="gaming-card bg-gradient-to-br from-green-900 to-gray-900 rounded-2xl p-4 text-center border border-green-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20FIFA%2025','_blank')">
+          <div class="text-4xl mb-2">⚽</div>
+          <p class="text-white font-bold text-sm">FIFA 25</p>
+          <p class="text-gray-400 text-xs">Available Now</p>
+        </div>
+        <div class="gaming-card bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 text-center border border-gray-700/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20Call%20of%20Duty','_blank')">
+          <div class="text-4xl mb-2">🔫</div>
+          <p class="text-white font-bold text-sm">Call of Duty</p>
+          <p class="text-gray-400 text-xs">Available Now</p>
+        </div>
+        <div class="gaming-card bg-gradient-to-br from-red-900 to-gray-900 rounded-2xl p-4 text-center border border-red-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20Racing%20Games','_blank')">
+          <div class="text-4xl mb-2">🏎️</div>
+          <p class="text-white font-bold text-sm">Racing Games</p>
+          <p class="text-gray-400 text-xs">Available Now</p>
+        </div>
+        <div class="gaming-card bg-gradient-to-br from-orange-900 to-gray-900 rounded-2xl p-4 text-center border border-orange-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20WWE%202K','_blank')">
+          <div class="text-4xl mb-2">🥊</div>
+          <p class="text-white font-bold text-sm">WWE 2K25</p>
+          <p class="text-gray-400 text-xs">Available Now</p>
+        </div>
+        <div class="gaming-card bg-gradient-to-br from-blue-900 to-gray-900 rounded-2xl p-4 text-center border border-blue-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20NBA%202K','_blank')">
+          <div class="text-4xl mb-2">🏀</div>
+          <p class="text-white font-bold text-sm">NBA 2K25</p>
+          <p class="text-gray-400 text-xs">Available Now</p>
+        </div>
+        <div class="gaming-card bg-gradient-to-br from-purple-900 to-gray-900 rounded-2xl p-4 text-center border border-purple-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20What%20other%20games%20do%20you%20have?','_blank')">
+          <div class="text-4xl mb-2">🎮</div>
+          <p class="text-white font-bold text-sm">+ Many More</p>
+          <p class="text-green-400 text-xs">Ask Us!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SERVICES ══════════════════════════════════════════════════════════ -->
+    <section id="services" class="scroll-mt-24">
+      <div class="text-center mb-10">
+        <span class="inline-block bg-brand-500/10 text-brand-500 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3">⚡ What We Offer</span>
+        <h2 class="text-2xl sm:text-3xl font-bold mb-2">Our Services</h2>
+        <p class="text-gray-600 dark:text-gray-400">Professional digital, government, tech &amp; cyber services — all in Nakuru.</p>
+      </div>
+
+      <!-- Government & Online Services -->
+      <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2"><i class="ph-fill ph-buildings text-brand-500"></i> Government &amp; Online Services</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-10">
+        <!-- KRA -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-2xl">🏦</div>
+          <div><p class="font-bold text-sm">KRA Services</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">PIN registration, iTax returns & compliance</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20KRA%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- SHA -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-2xl">🏥</div>
+          <div><p class="font-bold text-sm">SHA Services</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Social Health Authority registration & queries</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20SHA%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- NTSA -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-2xl">🚗</div>
+          <div><p class="font-bold text-sm">NTSA Services</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">DL renewals, vehicle inspection, TIMS portal</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20NTSA%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- eCitizen -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full flex items-center justify-center text-2xl">🌐</div>
+          <div><p class="font-bold text-sm">eCitizen Services</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Birth certs, good conduct, government portals</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20eCitizen%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- Passport & HELB -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center text-2xl">✈️</div>
+          <div><p class="font-bold text-sm">Passport &amp; HELB</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Passport applications &amp; HELB loan applications</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20Passport%20or%20HELB%20help." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- M-PESA -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-2xl">💚</div>
+          <div><p class="font-bold text-sm">M-PESA Agent</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Deposits, withdrawals &amp; bill payments</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20M-PESA%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- WiFi -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-2xl">📶</div>
+          <div><p class="font-bold text-sm">WiFi &amp; Internet</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">High-speed browsing in a comfortable environment</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20internet%20access." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- CV Writing -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full flex items-center justify-center text-2xl">📝</div>
+          <div><p class="font-bold text-sm">CV &amp; Applications</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">CV writing, cover letters &amp; online job applications</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20help%20with%20my%20CV." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+      </div>
+
+      <!-- Document Services -->
+      <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2"><i class="ph-fill ph-printer text-purple-500"></i> Document Services</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-10">
+        <!-- Printing -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center text-2xl"><i class="ph-fill ph-printer"></i></div>
+          <div><p class="font-bold text-sm">Printing</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Color &amp; B&W printing — A4, A3 &amp; more</p></div>
+          <a href="#doc-upload" class="text-xs font-semibold text-purple-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-upload-simple"></i> Upload Doc</a>
+        </div>
+        <!-- Scanning -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-full flex items-center justify-center text-2xl"><i class="ph-fill ph-scan"></i></div>
+          <div><p class="font-bold text-sm">Scanning</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">High-resolution scanning to PDF or JPG</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20scanning%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- Binding -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full flex items-center justify-center text-2xl"><i class="ph-fill ph-books"></i></div>
+          <div><p class="font-bold text-sm">Binding</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Spiral, hard cover &amp; soft cover binding</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20binding%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- Lamination -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full flex items-center justify-center text-2xl"><i class="ph-fill ph-shield-check"></i></div>
+          <div><p class="font-bold text-sm">Lamination</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Protect your certificates &amp; important docs</p></div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20lamination%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
+        </div>
+        <!-- Typing -->
+        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
+          <div class="service-icon-wrap w-14 h-14 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full flex items-center justify-center text-2xl"><i class="ph-fill ph-keyboard"></i></div>
+          <div><p class="font-bold text-sm">Typing Services</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Document typing, formatting &amp; editing</p></div>
+          <a href="#doc-upload" class="text-xs font-semibold text-purple-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-upload-simple"></i> Upload Draft</a>
+        </div>
+      </div>
+
+      <!-- ─── DOCUMENT UPLOAD SECTION ─────────────────────────────────── -->
+      <div id="doc-upload" class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8 shadow-sm mb-10">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-2xl">
+            <i class="ph-fill ph-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold">Document Upload Portal</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Upload your file, fill in details, and we'll handle the rest.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Drop zone -->
+          <div>
+            <div id="mainDropZone"
+              class="doc-upload-zone border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-8 text-center cursor-pointer hover:border-brand-500 transition-all"
+              ondragover="event.preventDefault();this.classList.add('active')"
+              ondragleave="this.classList.remove('active')"
+              ondrop="handleDocDrop(event)"
+              onclick="document.getElementById('mainFileInput').click()">
+              <i class="ph-fill ph-cloud-arrow-up text-5xl text-gray-300 dark:text-gray-600 mb-3 block"></i>
+              <p class="text-gray-700 dark:text-gray-300 font-semibold mb-1">Drag & drop your file here</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">or click to browse</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-3">Accepts PDF, DOCX, JPG, PNG — max 20 MB</p>
+            </div>
+            <input type="file" id="mainFileInput" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              onchange="handleDocFileSelect(event)">
+            <div id="mainFileStatus" class="mt-4 hidden"></div>
+            <!-- Upload progress bar -->
+            <div id="uploadProgressWrap" class="mt-4 hidden">
+              <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                <span id="uploadFileName" class="truncate"></span>
+                <span id="uploadPercent">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div id="uploadProgressBar" class="bg-brand-500 h-2 rounded-full transition-all duration-300" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form fields -->
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Needed</label>
+              <select id="docService" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 focus:border-brand-500 outline-none transition text-sm">
+                <option value="">Select a service…</option>
+                <option value="Printing (Black & White)">Printing — Black &amp; White</option>
+                <option value="Printing (Color)">Printing — Color</option>
+                <option value="Scanning">Scanning</option>
+                <option value="Binding">Binding</option>
+                <option value="Lamination">Lamination</option>
+                <option value="Typing / Document Formatting">Typing / Document Formatting</option>
+                <option value="CV Writing">CV Writing</option>
+                <option value="Online Job Application">Online Job Application</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Your Name</label>
+              <input type="text" id="docName" placeholder="Full Name"
+                class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 focus:border-brand-500 outline-none transition text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
+              <input type="tel" id="docPhone" placeholder="07XX XXX XXX"
+                class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 focus:border-brand-500 outline-none transition text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Instructions / Message</label>
+              <textarea id="docInstructions" rows="3" placeholder="e.g. Print 3 copies, double-sided, A4 size…"
+                class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 focus:border-brand-500 outline-none transition resize-none text-sm"></textarea>
+            </div>
+            <button onclick="submitDocUpload()"
+              class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 px-4 rounded-xl transition shadow-md flex items-center justify-center gap-2">
+              <i class="ph-fill ph-paper-plane-right"></i> Submit via WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── GRAPHIC DESIGN ──────────────────────────────────────────── -->
+      <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2"><i class="ph-fill ph-paint-brush text-pink-500"></i> Graphic Design</h3>
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-6 sm:p-8 border border-pink-100 dark:border-gray-700 mb-10">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
+          <div>
+            <h4 class="text-xl font-extrabold text-gray-900 dark:text-white mb-1">Creative Design Services</h4>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">Professional designs delivered fast — posters, logos, flyers &amp; more.</p>
+          </div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20a%20graphic%20design%20service."
+            target="_blank" rel="noopener noreferrer"
+            class="flex-shrink-0 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-md flex items-center gap-2 text-sm">
+            <i class="ph-fill ph-paint-brush"></i> Request Design
+          </a>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
+            <div class="text-3xl mb-2">🎨</div><p class="text-xs font-bold text-gray-800 dark:text-white">Posters</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
+            <div class="text-3xl mb-2">⭐</div><p class="text-xs font-bold text-gray-800 dark:text-white">Logos</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
+            <div class="text-3xl mb-2">🃏</div><p class="text-xs font-bold text-gray-800 dark:text-white">Business Cards</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
+            <div class="text-3xl mb-2">🏷️</div><p class="text-xs font-bold text-gray-800 dark:text-white">Banners</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
+            <div class="text-3xl mb-2">📱</div><p class="text-xs font-bold text-gray-800 dark:text-white">Social Flyers</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
+            <div class="text-3xl mb-2">📦</div><p class="text-xs font-bold text-gray-800 dark:text-white">More…</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CCTV INSTALLATION ═══════════════════════════════════════════════ -->
+    <section id="cctv" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 rounded-3xl p-6 sm:p-10 border border-gray-700 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-60 h-60 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-brand-500/20 rounded-2xl flex items-center justify-center text-4xl shield-pulse">📷</div>
+              <div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">CCTV Installation &amp; Maintenance</h2>
+                <p class="text-gray-400 text-sm mt-1">Protect your home &amp; business with professional surveillance systems.</p>
+              </div>
+            </div>
+            <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20CCTV%20installation%20services."
+              target="_blank" rel="noopener noreferrer"
+              class="flex-shrink-0 bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 px-6 rounded-xl transition shadow-xl flex items-center gap-2 neon-green text-sm">
+              <i class="ph-fill ph-whatsapp-logo"></i> Get a Free Quote
+            </a>
+          </div>
+          <!-- Trust badges -->
+          <div class="flex flex-wrap gap-3 mb-8">
+            <span class="bg-green-900/40 text-green-300 text-xs font-bold px-3 py-1.5 rounded-full border border-green-700/40 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Certified Technicians</span>
+            <span class="bg-blue-900/40 text-blue-300 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-700/40 flex items-center gap-1"><i class="ph-fill ph-shield-check"></i> 1-Year Warranty</span>
+            <span class="bg-purple-900/40 text-purple-300 text-xs font-bold px-3 py-1.5 rounded-full border border-purple-700/40 flex items-center gap-1"><i class="ph-fill ph-clock"></i> 24/7 Support</span>
+            <span class="bg-orange-900/40 text-orange-300 text-xs font-bold px-3 py-1.5 rounded-full border border-orange-700/40 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Nakuru & Environs</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+              <div class="text-3xl mb-3">🏠</div>
+              <h4 class="text-white font-bold mb-1">Home CCTV</h4>
+              <p class="text-gray-400 text-xs">Complete home security camera installation with mobile viewing.</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+              <div class="text-3xl mb-3">🏢</div>
+              <h4 class="text-white font-bold mb-1">Office Surveillance</h4>
+              <p class="text-gray-400 text-xs">Comprehensive office &amp; business premises monitoring systems.</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+              <div class="text-3xl mb-3">📡</div>
+              <h4 class="text-white font-bold mb-1">Remote Monitoring</h4>
+              <p class="text-gray-400 text-xs">View your cameras from anywhere via smartphone or PC.</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
+              <div class="text-3xl mb-3">🔧</div>
+              <h4 class="text-white font-bold mb-1">Maintenance &amp; Repair</h4>
+              <p class="text-gray-400 text-xs">Fast repair, DVR/NVR configuration &amp; system upgrades.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PRICING ══════════════════════════════════════════════════════════ -->
+    <section id="pricing" class="scroll-mt-24">
+      <div class="text-center mb-10">
+        <span class="inline-block bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3">💰 Transparent Pricing</span>
+        <h2 class="text-2xl sm:text-3xl font-bold mb-2">Service Pricing</h2>
+        <p class="text-gray-600 dark:text-gray-400">Fair & affordable prices for all our services.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Printing -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-2xl mb-4"><i class="ph-fill ph-printer"></i></div>
+          <h3 class="font-bold text-lg mb-3">Printing</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">B&W (A4)</span><span class="font-bold text-gray-900 dark:text-white">KES 5</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Color (A4)</span><span class="font-bold text-gray-900 dark:text-white">KES 30</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">B&W (A3)</span><span class="font-bold text-gray-900 dark:text-white">KES 20</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Color (A3)</span><span class="font-bold text-gray-900 dark:text-white">KES 60</span></div>
+          </div>
+        </div>
+        <!-- Scanning & Binding -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center text-2xl mb-4"><i class="ph-fill ph-scan"></i></div>
+          <h3 class="font-bold text-lg mb-3">Scanning &amp; Binding</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Scan (per page)</span><span class="font-bold text-gray-900 dark:text-white">KES 10</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Spiral Binding</span><span class="font-bold text-gray-900 dark:text-white">KES 150</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Hard Cover</span><span class="font-bold text-gray-900 dark:text-white">KES 300</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Lamination</span><span class="font-bold text-gray-900 dark:text-white">KES 50</span></div>
+          </div>
+        </div>
+        <!-- Gaming — featured -->
+        <div class="pricing-featured rounded-2xl p-6 shadow-lg text-white relative overflow-hidden neon-green">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl mb-4">🎮</div>
+          <h3 class="font-bold text-lg mb-1">Gaming Hub</h3>
+          <p class="text-green-100 text-xs mb-4">PS5 · FIFA · COD · Racing</p>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm"><span class="text-green-100">Single Player/hr</span><span class="font-extrabold">KES 100</span></div>
+            <div class="flex justify-between text-sm"><span class="text-green-100">Multiplayer/hr</span><span class="font-extrabold">KES 150</span></div>
+            <div class="flex justify-between text-sm"><span class="text-green-100">All-Day (6hrs)</span><span class="font-extrabold">KES 400</span></div>
+          </div>
+          <a href="https://wa.me/254740513137?text=Hi!%20I%20want%20to%20book%20a%20gaming%20session."
+            target="_blank" class="mt-4 block text-center bg-white/20 hover:bg-white/30 text-white font-bold py-2 rounded-xl text-sm transition">Book Now</a>
+        </div>
+        <!-- Graphic Design -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-xl flex items-center justify-center text-2xl mb-4"><i class="ph-fill ph-paint-brush"></i></div>
+          <h3 class="font-bold text-lg mb-3">Graphic Design</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Social Flyer</span><span class="font-bold text-gray-900 dark:text-white">KES 300</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Logo Design</span><span class="font-bold text-gray-900 dark:text-white">KES 1,000</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Business Card</span><span class="font-bold text-gray-900 dark:text-white">KES 500</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Banner/Poster</span><span class="font-bold text-gray-900 dark:text-white">From KES 500</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="text-center text-xs text-gray-500 dark:text-gray-400">* Prices may vary based on size, quantity, and complexity. <a href="https://wa.me/254740513137" target="_blank" class="text-brand-500 hover:underline">Chat with us</a> for custom quotes.</p>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section id="product" class="scroll-mt-24 bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-8 gap-2">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+            <i class="ph-fill ph-shopping-bag text-brand-500"></i> Tech Accessories
+          </h2>
+          <p class="text-gray-600 dark:text-gray-400 mt-1 text-sm">Premium tech gear — pickup in Nakuru or order via WhatsApp.</p>
+        </div>
+        <div class="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-3 py-1.5 rounded-full self-start sm:self-auto">
+          <i class="ph-fill ph-lock-simple text-green-500 text-sm"></i>
+          <span class="text-xs font-semibold text-green-700 dark:text-green-400">Secure PesaPal Checkout</span>
+        </div>
+      </div>
+      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="scroll-mt-24 mb-20">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col lg:flex-row">
+        <div class="p-6 sm:p-8 lg:w-1/2">
+          <h2 class="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-2">
+            <i class="ph-fill ph-envelope-simple text-brand-500"></i> Get in Touch
+          </h2>
+          <form id="contactForm" onsubmit="sendConfirmation(event)" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+              <input type="text" name="name" required placeholder="Your name"
+                class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+              <input type="email" name="email" required placeholder="you@example.com"
+                class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
+              <textarea name="message" rows="4" required placeholder="How can we help you?"
+                class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition resize-none text-sm"></textarea>
+            </div>
+            <button type="submit"
+              class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 px-4 rounded-xl transition shadow-md flex items-center justify-center gap-2">
+              <i class="ph-fill ph-paper-plane-right"></i> Send via WhatsApp
+            </button>
+          </form>
+          <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-3">
+            <a href="tel:+254740513137" class="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-brand-500 transition">
+              <i class="ph-fill ph-phone text-xl text-brand-500"></i>
+              <span class="font-medium">+254 740 513 137</span>
+            </a>
+            <a href="https://wa.me/254740513137" target="_blank" rel="noopener noreferrer"
+              class="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-green-500 transition">
+              <i class="ph-fill ph-whatsapp-logo text-xl text-green-500"></i>
+              <span class="font-medium">Chat on WhatsApp</span>
+            </a>
+            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+              <i class="ph-fill ph-map-pin text-xl text-red-500"></i>
+              <span class="font-medium">Westgate Ent, Nakuru</span>
+            </div>
+          </div>
+        </div>
+        <div class="lg:w-1/2 min-h-[300px] lg:min-h-full">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.019278889977!2d36.05!3d-0.303!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182972066a2a1f81%3A0x66e60cf862aa0f4d!2sNakuru%2C%20Kenya!5e0!3m2!1sen!2ske!4v1684000000000!5m2!1sen!2ske"
+            class="w-full h-full min-h-[300px] border-0" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade" title="Nakuru location map"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══ FOOTER ════════════════════════════════════════════════════════════ -->
+  <footer class="bg-gray-900 text-gray-400 py-8 text-center border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-center items-center gap-2 mb-3">
+        <i class="ph-fill ph-film-strip text-brand-500 text-2xl"></i>
+        <span class="text-white font-bold text-lg">Westgate Entertainment</span>
+      </div>
+      <p class="text-sm">📍 Westgate Ent, Nakuru &nbsp;|&nbsp; 📞 +254 740 513 137</p>
+      <p class="text-xs mt-2 text-gray-600">&copy; 2025 Westgate Ent. All rights reserved. Movie data by <a href="https://www.themoviedb.org" target="_blank" class="hover:text-gray-400 underline">TMDB</a>. Payments by <a href="https://www.pesapal.com" target="_blank" class="hover:text-gray-400 underline">PesaPal</a>.</p>
+    </div>
+  </footer>
+
+  <!-- WhatsApp FAB -->
+  <a href="https://wa.me/254740513137" target="_blank" rel="noopener noreferrer"
+    class="fixed bottom-6 right-6 w-14 h-14 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl shadow-xl hover:bg-green-600 hover:scale-110 transition-transform z-40"
+    aria-label="Chat on WhatsApp" title="Chat on WhatsApp">
+    <i class="ph-fill ph-whatsapp-logo"></i>
+  </a>
+
+  <!-- Script load order matters -->
+  <script src="config.js"></script>
+  <script src="ui.js"></script>
+  <script src="theme.js"></script>
+  <script src="api.js"></script>
+  <script src="trailer.js"></script>
+  <script src="moviedetail.js"></script>
+  <script src="pesapal.js"></script>
+  <script src="genres.js"></script>
+  <script src="movies.js"></script>
+  <script src="main.js"></script>
+
+  <script>
+  // ── Genre Nav ─────────────────────────────────────────────────────────────
+  const GenreNav = {
+    activeTab: 'movie',
+    mobileTab: 'movie',
+    mobileOpen: false,
+
+    toggle() {
+      const panel = document.getElementById('genreNavPanel');
+      const caret = document.getElementById('genreNavCaret');
+      const isHidden = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !isHidden);
+      caret.style.transform = isHidden ? 'rotate(180deg)' : '';
+    },
+
+    close() {
+      document.getElementById('genreNavPanel')?.classList.add('hidden');
+      const caret = document.getElementById('genreNavCaret');
+      if (caret) caret.style.transform = '';
+    },
+
+    switchTab(tab) {
+      this.activeTab = tab;
+      const isMovie = tab === 'movie';
+      document.getElementById('gnMovieGenres').classList.toggle('hidden', !isMovie);
+      document.getElementById('gnTVGenres').classList.toggle('hidden', isMovie);
+      const activeC = 'bg-brand-500 text-white';
+      const inactiveC = 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700';
+      document.getElementById('gnTabMovie').className = `gn-tab flex-1 py-2 rounded-xl text-sm font-bold transition ${isMovie ? activeC : inactiveC}`;
+      document.getElementById('gnTabTV').className    = `gn-tab flex-1 py-2 rounded-xl text-sm font-bold transition ${!isMovie ? activeC : inactiveC}`;
+    },
+
+    toggleMobile() {
+      this.mobileOpen = !this.mobileOpen;
+      document.getElementById('mobileGenrePanel').classList.toggle('hidden', !this.mobileOpen);
+      document.getElementById('mobileGenreCaret').style.transform = this.mobileOpen ? 'rotate(180deg)' : '';
+    },
+
+    switchMobileTab(tab) {
+      this.mobileTab = tab;
+      const isMovie = tab === 'movie';
+      document.getElementById('mgnMovieGenres').classList.toggle('hidden', !isMovie);
+      document.getElementById('mgnTVGenres').classList.toggle('hidden', isMovie);
+      const activeC = 'mgn-tab flex-1 py-1.5 rounded-lg text-xs font-bold bg-brand-500 text-white transition';
+      const inactiveC = 'mgn-tab flex-1 py-1.5 rounded-lg text-xs font-bold bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition';
+      document.getElementById('mgnTabMovie').className = isMovie  ? activeC : inactiveC;
+      document.getElementById('mgnTabTV').className    = !isMovie ? activeC : inactiveC;
+    },
+
+    populateDesktop(movieGenres, tvGenres) {
+      const pill = (genre, mediaType) => {
+        const isAll = genre.id === 'all';
+        return `<button onclick="GenreNav.selectGenre(${JSON.stringify(genre.id)}, '${mediaType}', '${genre.name.replace(/'/g,"\\'")}') "
+          class="gn-pill px-3 py-1.5 rounded-full text-xs font-semibold border transition
+            ${isAll ? 'bg-brand-500 text-white border-brand-500' : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-brand-500 hover:text-brand-500 hover:bg-brand-500/5'}">
+          ${genre.name}
+        </button>`;
+      };
+      const allGenre = { id: 'all', name: 'All' };
+      document.getElementById('gnMovieGenres').innerHTML = [allGenre, ...movieGenres].map(g => pill(g, 'movie')).join('');
+      document.getElementById('gnTVGenres').innerHTML    = [allGenre, ...tvGenres].map(g => pill(g, 'tv')).join('');
+    },
+
+    populateMobile(movieGenres, tvGenres) {
+      const pill = (genre, mediaType) => {
+        const isAll = genre.id === 'all';
+        return `<button onclick="GenreNav.selectGenre(${JSON.stringify(genre.id)}, '${mediaType}', '${genre.name.replace(/'/g,"\\'")}'); UI.closeMobileMenu()"
+          class="px-3 py-1 rounded-full text-xs font-semibold border transition
+            ${isAll ? 'bg-brand-500 text-white border-brand-500' : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'}">
+          ${genre.name}
+        </button>`;
+      };
+      const allGenre = { id: 'all', name: 'All' };
+      document.getElementById('mgnMovieGenres').innerHTML = [allGenre, ...movieGenres].map(g => pill(g, 'movie')).join('');
+      document.getElementById('mgnTVGenres').innerHTML    = [allGenre, ...tvGenres].map(g => pill(g, 'tv')).join('');
+    },
+
+    selectGenre(genreId, mediaType, genreName) {
+      const isAll = genreId === 'all';
+      const gid   = isAll ? null : parseInt(genreId);
+      const panelId = mediaType === 'movie' ? 'gnMovieGenres' : 'gnTVGenres';
+      document.querySelectorAll(`#${panelId} .gn-pill`).forEach(b => {
+        const match = (isAll && b.textContent.trim() === 'All') ||
+                      (!isAll && b.textContent.trim() === genreName);
+        b.classList.toggle('bg-brand-500', match);
+        b.classList.toggle('text-white', match);
+        b.classList.toggle('border-brand-500', match);
+        b.classList.toggle('bg-gray-50', !match);
+        b.classList.toggle('dark:bg-gray-800', !match);
+      });
+      const headingId = mediaType === 'movie' ? 'movieSectionHeading' : 'tvSectionHeading';
+      const el = document.getElementById(headingId);
+      if (el) el.textContent = isAll
+        ? (mediaType === 'movie' ? 'Popular Movies' : 'Popular TV Series')
+        : genreName + ' ' + (mediaType === 'movie' ? 'Movies' : 'Series');
+      const sectionId = mediaType === 'movie' ? 'movies' : 'tvseries';
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (mediaType === 'movie') { ContentManager.state.movieGenre = gid; ContentManager.loadMovies(true); }
+      else                        { ContentManager.state.tvGenre = gid;   ContentManager.loadTV(true); }
+      this.close();
+    }
+  };
+
+  document.addEventListener('click', e => {
+    if (!document.getElementById('genreNavWrapper')?.contains(e.target)) GenreNav.close();
+  });
+
+  // ── Document Upload ──────────────────────────────────────────────────────
+  let selectedDocFile = null;
+
+  function handleDocDrop(e) {
+    e.preventDefault();
+    document.getElementById('mainDropZone').classList.remove('active');
+    const file = e.dataTransfer.files[0];
+    if (file) processDocFile(file);
+  }
+
+  function handleDocFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) processDocFile(file);
+  }
+
+  function processDocFile(file) {
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+      document.getElementById('mainFileStatus').innerHTML = '<p class="text-red-500 text-sm flex items-center gap-1"><i class="ph-fill ph-warning"></i> File too large — max 20 MB</p>';
+      document.getElementById('mainFileStatus').classList.remove('hidden');
+      return;
+    }
+    selectedDocFile = file;
+    // Show file info in drop zone
+    document.getElementById('mainDropZone').innerHTML = `
+      <i class="ph-fill ph-file-text text-4xl text-brand-500 mb-2 block"></i>
+      <p class="text-gray-700 dark:text-gray-300 font-bold truncate px-4">${file.name}</p>
+      <p class="text-xs text-gray-500 mt-1">${(file.size / 1024).toFixed(1)} KB</p>
+      <button onclick="resetDocUpload()" class="mt-3 text-xs text-red-400 hover:text-red-500 transition">✕ Remove</button>`;
+    document.getElementById('mainFileStatus').classList.add('hidden');
+    // Simulate upload progress animation
+    const wrap = document.getElementById('uploadProgressWrap');
+    const bar  = document.getElementById('uploadProgressBar');
+    const pct  = document.getElementById('uploadPercent');
+    const fn   = document.getElementById('uploadFileName');
+    wrap.classList.remove('hidden');
+    fn.textContent = file.name;
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress >= 100) { progress = 100; clearInterval(interval); }
+      bar.style.width = progress + '%';
+      pct.textContent = Math.round(progress) + '%';
+    }, 120);
+  }
+
+  function resetDocUpload() {
+    selectedDocFile = null;
+    document.getElementById('mainDropZone').innerHTML = `
+      <i class="ph-fill ph-cloud-arrow-up text-5xl text-gray-300 dark:text-gray-600 mb-3 block"></i>
+      <p class="text-gray-700 dark:text-gray-300 font-semibold mb-1">Drag & drop your file here</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">or click to browse</p>
+      <p class="text-xs text-gray-400 dark:text-gray-500 mt-3">Accepts PDF, DOCX, JPG, PNG — max 20 MB</p>`;
+    document.getElementById('uploadProgressWrap').classList.add('hidden');
+    document.getElementById('mainFileInput').value = '';
+  }
+
+  function submitDocUpload() {
+    const service      = document.getElementById('docService').value;
+    const name         = document.getElementById('docName').value.trim();
+    const phone        = document.getElementById('docPhone').value.trim();
+    const instructions = document.getElementById('docInstructions').value.trim();
+
+    if (!service) { alert('Please select a service.'); return; }
+    if (!name)    { alert('Please enter your name.'); return; }
+    if (!phone)   { alert('Please enter your phone number.'); return; }
+
+    const fileInfo = selectedDocFile ? `📎 File: ${selectedDocFile.name} (${(selectedDocFile.size/1024).toFixed(1)} KB)` : '(No file selected — I will bring it in person)';
+    const msg = encodeURIComponent(
+      `Hi Westgate Ent! I need help with:\n\n` +
+      `🛠 Service: ${service}\n` +
+      `👤 Name: ${name}\n` +
+      `📞 Phone: ${phone}\n` +
+      `${fileInfo}\n` +
+      (instructions ? `\n📋 Instructions:\n${instructions}` : '')
+    );
+    window.open(`https://wa.me/254740513137?text=${msg}`, '_blank', 'noopener,noreferrer');
+  }
+  </script>
+</body>
+</html>
