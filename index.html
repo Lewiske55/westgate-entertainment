@@ -6,9 +6,9 @@
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="description" content="Watch top movies & TV show trailers, shop tech accessories, print documents and access digital services at Westgate Entertainment — Nakuru, Kenya.">
   <meta name="keywords" content="Movies, TV Series, Phone Accessories, PesaPal Payment, Nakuru Cyber Café, Print, Scan, M-PESA, Gaming, CCTV, Graphic Design, KRA, NTSA, eCitizen">
-  <meta property="og:title" content="Westgate Entertainment — Nakuru">
+  <meta property="og:title" content="Westgate Entertainment">
   <meta property="og:description" content="Movies, TV trailers, tech accessories, gaming, CCTV & cyber services in Nakuru, Kenya.">
-  <title>Westgate Entertainment — Nakuru</title>
+  <title>Westgate Entertainment</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -97,7 +97,6 @@
           <a href="#gaming"    class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Gaming</a>
           <a href="#services"  class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Services</a>
           <a href="#product"   class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Products</a>
-          <a href="#pricing"   class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Pricing</a>
           <a href="#contact"   class="hover:text-brand-500 px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
         </div>
         <div class="flex items-center gap-2">
@@ -151,19 +150,21 @@
   </nav>
 
   <!-- ═══ HERO ══════════════════════════════════════════════════════════════ -->
-  <header class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-14 md:py-20 px-4 text-center relative overflow-hidden">
-    <div class="absolute -top-20 -left-20 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  <header class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-14 md:py-20 px-4 text-center relative">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute -top-20 -left-20 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-20 -right-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
+    </div>
     <div class="relative z-10">
-      <p class="text-brand-500 text-sm font-semibold tracking-widest uppercase mb-3">Nakuru's Premier Entertainment Hub</p>
+      <p class="text-brand-500 text-sm font-semibold tracking-widest uppercase mb-3">Your Ultimate Gaming & Cyber Experience</p>
       <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
         Movie Shop &amp; Cyber Café
       </h1>
       <p class="text-base md:text-lg text-gray-300 max-w-2xl mx-auto mb-8">
-        Movies · TV · Gaming · CCTV · Printing · eCitizen · Graphic Design<br class="hidden md:block"> — All under one roof in Nakuru.
+        Movies · TV Series· Gaming · CCTV · Printing · eCitizen · Graphic Design . NTSA . KRA <br class="hidden md:block"> 
       </p>
       <!-- Search bar — rendered above all content -->
-      <div class="max-w-xl mx-auto relative" id="searchWrapper" style="z-index:300">
+      <div class="max-w-xl mx-auto relative" id="searchWrapper" style="z-index:9999;isolation:isolate">
         <div class="relative">
           <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl pointer-events-none"></i>
           <input type="text" id="searchBox" placeholder="Search movies or TV shows…" oninput="handleSearch()" autocomplete="off"
@@ -172,8 +173,8 @@
             <i class="ph ph-x text-lg"></i>
           </button>
         </div>
-        <!-- Live results dropdown — z-index ensures it's above everything -->
-        <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden max-h-[70vh] overflow-y-auto" style="z-index:400">
+        <!-- Live results dropdown — rendered above all page content -->
+        <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden max-h-[70vh] overflow-y-auto" style="z-index:9999">
           <div id="searchDropdownInner"></div>
         </div>
         <p class="text-xs text-gray-500 mt-2">Type to search — click any result to view details &amp; trailer</p>
@@ -216,7 +217,7 @@
       <div class="text-center mb-10">
         <span class="inline-block bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3">🎮 Entertainment</span>
         <h2 class="text-2xl sm:text-3xl font-bold mb-2">Gaming Hub</h2>
-        <p class="text-gray-600 dark:text-gray-400">Experience next-gen gaming on our PS5 setup — FIFA, Call of Duty, Racing & more.</p>
+        <p class="text-gray-600 dark:text-gray-400">Experience next-gen gaming on our PS5 & PS4 setup — FC26, Call of Duty, Fortnite, GTA V , Mortal Kombat 1, Mortal Kombat 1 , 2K26 ,  Racing & more.</p>
       </div>
 
       <!-- Featured gaming banner -->
@@ -228,16 +229,18 @@
             <div class="flex items-center justify-center md:justify-start gap-3 mb-4">
               <span class="text-5xl">🕹️</span>
               <div>
-                <h3 class="text-white text-2xl sm:text-3xl font-extrabold">PS5 Gaming Sessions</h3>
+                <h3 class="text-white text-2xl sm:text-3xl font-extrabold">PS5 & PS4 Gaming Sessions</h3>
                 <p class="text-purple-300 text-sm">Latest titles — multiplayer & single player</p>
               </div>
             </div>
             <div class="flex flex-wrap justify-center md:justify-start gap-2 mb-6">
-              <span class="bg-purple-800/60 text-purple-200 text-xs font-bold px-3 py-1 rounded-full border border-purple-700">⚽ FIFA 25</span>
-              <span class="bg-gray-800/60 text-gray-200 text-xs font-bold px-3 py-1 rounded-full border border-gray-700">🔫 Call of Duty</span>
-              <span class="bg-red-900/60 text-red-200 text-xs font-bold px-3 py-1 rounded-full border border-red-800">🏎️ Racing Games</span>
-              <span class="bg-blue-900/60 text-blue-200 text-xs font-bold px-3 py-1 rounded-full border border-blue-800">🥊 WWE 2K25</span>
-              <span class="bg-green-900/60 text-green-200 text-xs font-bold px-3 py-1 rounded-full border border-green-800">🏀 NBA 2K25</span>
+              <span class="bg-purple-800/60 text-purple-200 text-xs font-bold px-3 py-1 rounded-full border border-purple-700">FC26</span>
+              <span class="bg-gray-800/60 text-gray-200 text-xs font-bold px-3 py-1 rounded-full border border-gray-700"> CALL OF DUTY</span>
+              <span class="bg-red-900/60 text-red-200 text-xs font-bold px-3 py-1 rounded-full border border-red-800"> GTA V </span>
+              <span class="bg-blue-900/60 text-blue-200 text-xs font-bold px-3 py-1 rounded-full border border-blue-800">MORTAL KOMBAT 11</span>
+              <span class="bg-green-900/60 text-green-200 text-xs font-bold px-3 py-1 rounded-full border border-green-800">MORTAL KOMBAT 1 </span>
+              <span class="bg-green-900/60 text-green-200 text-xs font-bold px-3 py-1 rounded-full border border-green-800">FORTNITE</span>
+              <span class="bg-green-900/60 text-green-200 text-xs font-bold px-3 py-1 rounded-full border border-green-800">2K26</span>
               <span class="bg-yellow-900/60 text-yellow-200 text-xs font-bold px-3 py-1 rounded-full border border-yellow-800">+ More</span>
             </div>
             <a href="https://wa.me/254740513137?text=Hi!%20I'd%20like%20to%20book%20a%20gaming%20session."
@@ -248,17 +251,17 @@
           </div>
           <div class="flex-shrink-0 grid grid-cols-2 gap-3">
             <div class="bg-gray-800/60 rounded-xl p-4 text-center border border-purple-800/30 backdrop-blur-sm">
-              <p class="text-3xl font-extrabold text-purple-400">KES 100</p>
+              <p class="text-3xl font-extrabold text-purple-400">KES 120</p>
               <p class="text-gray-400 text-xs mt-1">Per Hour</p>
               <p class="text-gray-500 text-xs">Single Player</p>
             </div>
             <div class="bg-gray-800/60 rounded-xl p-4 text-center border border-brand-500/30 backdrop-blur-sm">
-              <p class="text-3xl font-extrabold text-brand-500">KES 150</p>
+              <p class="text-3xl font-extrabold text-brand-500">KES 180</p>
               <p class="text-gray-400 text-xs mt-1">Per Hour</p>
               <p class="text-gray-500 text-xs">Multiplayer</p>
             </div>
             <div class="bg-gray-800/60 rounded-xl p-4 text-center border border-gray-700 backdrop-blur-sm col-span-2">
-              <p class="text-2xl font-extrabold text-yellow-400">KES 400</p>
+              <p class="text-2xl font-extrabold text-yellow-400">KES 800</p>
               <p class="text-gray-400 text-xs mt-1">All-Day Pass</p>
               <p class="text-gray-500 text-xs">6 Hours · Best Value</p>
             </div>
@@ -269,32 +272,45 @@
       <!-- Game tiles -->
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <div class="gaming-card bg-gradient-to-br from-green-900 to-gray-900 rounded-2xl p-4 text-center border border-green-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20FIFA%2025','_blank')">
-          <div class="text-4xl mb-2">⚽</div>
-          <p class="text-white font-bold text-sm">FIFA 25</p>
+          <div class="text-4xl mb-2"></div>
+          <p class="text-white font-bold text-sm">FC26</p>
           <p class="text-gray-400 text-xs">Available Now</p>
         </div>
         <div class="gaming-card bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 text-center border border-gray-700/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20Call%20of%20Duty','_blank')">
-          <div class="text-4xl mb-2">🔫</div>
-          <p class="text-white font-bold text-sm">Call of Duty</p>
+          <div class="text-4xl mb-2"></div>
+          <p class="text-white font-bold text-sm">CALL OF DUTY</p>
           <p class="text-gray-400 text-xs">Available Now</p>
         </div>
         <div class="gaming-card bg-gradient-to-br from-red-900 to-gray-900 rounded-2xl p-4 text-center border border-red-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20Racing%20Games','_blank')">
-          <div class="text-4xl mb-2">🏎️</div>
-          <p class="text-white font-bold text-sm">Racing Games</p>
+          <div class="text-4xl mb-2"></div>
+          <p class="text-white font-bold text-sm">GTA V</p>
           <p class="text-gray-400 text-xs">Available Now</p>
         </div>
         <div class="gaming-card bg-gradient-to-br from-orange-900 to-gray-900 rounded-2xl p-4 text-center border border-orange-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20WWE%202K','_blank')">
-          <div class="text-4xl mb-2">🥊</div>
-          <p class="text-white font-bold text-sm">WWE 2K25</p>
+          <div class="text-4xl mb-2"></div>
+          <p class="text-white font-bold text-sm">MORTAL KOMBAT 11</p>
           <p class="text-gray-400 text-xs">Available Now</p>
         </div>
         <div class="gaming-card bg-gradient-to-br from-blue-900 to-gray-900 rounded-2xl p-4 text-center border border-blue-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20NBA%202K','_blank')">
-          <div class="text-4xl mb-2">🏀</div>
-          <p class="text-white font-bold text-sm">NBA 2K25</p>
+          <div class="text-4xl mb-2"></div>
+          <p class="text-white font-bold text-sm">MORTAL KOMBAT 1</p>
           <p class="text-gray-400 text-xs">Available Now</p>
         </div>
+
+        <div class="gaming-card bg-gradient-to-br from-blue-900 to-gray-900 rounded-2xl p-4 text-center border border-blue-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20NBA%202K','_blank')">
+          <div class="text-4xl mb-2"></div>
+          <p class="text-white font-bold text-sm">FORTNITE</p>
+          <p class="text-gray-400 text-xs">Available Now</p>
+          </div>
+
+          <div class="gaming-card bg-gradient-to-br from-blue-900 to-gray-900 rounded-2xl p-4 text-center border border-blue-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20I%20want%20to%20play%20NBA%202K','_blank')">
+          <div class="text-4xl mb-2"></div>
+          <p class="text-white font-bold text-sm">2K26</p>
+          <p class="text-gray-400 text-xs">Available Now</p>
+          </div>
+
         <div class="gaming-card bg-gradient-to-br from-purple-900 to-gray-900 rounded-2xl p-4 text-center border border-purple-800/40 hover:-translate-y-1 transition cursor-pointer group" onclick="window.open('https://wa.me/254740513137?text=Hi!%20What%20other%20games%20do%20you%20have?','_blank')">
-          <div class="text-4xl mb-2">🎮</div>
+          <div class="text-4xl mb-2"></div>
           <p class="text-white font-bold text-sm">+ Many More</p>
           <p class="text-green-400 text-xs">Ask Us!</p>
         </div>
@@ -333,7 +349,7 @@
         <!-- eCitizen -->
         <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
           <div class="service-icon-wrap w-14 h-14 bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 rounded-full flex items-center justify-center text-2xl">🌐</div>
-          <div><p class="font-bold text-sm">eCitizen Services</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Birth certs, good conduct, government portals</p></div>
+          <div><p class="font-bold text-sm">E-Citizen Services</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Birth certs, good conduct, government portals</p></div>
           <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20eCitizen%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
         </div>
         <!-- Passport & HELB -->
@@ -342,18 +358,7 @@
           <div><p class="font-bold text-sm">Passport &amp; HELB</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Passport applications &amp; HELB loan applications</p></div>
           <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20Passport%20or%20HELB%20help." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
         </div>
-        <!-- M-PESA -->
-        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
-          <div class="service-icon-wrap w-14 h-14 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-2xl">💚</div>
-          <div><p class="font-bold text-sm">M-PESA Agent</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Deposits, withdrawals &amp; bill payments</p></div>
-          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20M-PESA%20services." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
-        </div>
-        <!-- WiFi -->
-        <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
-          <div class="service-icon-wrap w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-2xl">📶</div>
-          <div><p class="font-bold text-sm">WiFi &amp; Internet</p><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">High-speed browsing in a comfortable environment</p></div>
-          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20internet%20access." target="_blank" class="text-xs font-semibold text-green-600 hover:underline flex items-center gap-1 mt-auto"><i class="ph-fill ph-whatsapp-logo"></i> Enquire</a>
-        </div>
+        
         <!-- CV Writing -->
         <div class="service-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 text-center hover:-translate-y-1 transition duration-300 flex flex-col items-center gap-3">
           <div class="service-icon-wrap w-14 h-14 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full flex items-center justify-center text-2xl">📝</div>
@@ -478,42 +483,7 @@
         </div>
       </div>
 
-      <!-- ─── GRAPHIC DESIGN ──────────────────────────────────────────── -->
-      <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2"><i class="ph-fill ph-paint-brush text-pink-500"></i> Graphic Design</h3>
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-6 sm:p-8 border border-pink-100 dark:border-gray-700 mb-10">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
-          <div>
-            <h4 class="text-xl font-extrabold text-gray-900 dark:text-white mb-1">Creative Design Services</h4>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">Professional designs delivered fast — posters, logos, flyers &amp; more.</p>
-          </div>
-          <a href="https://wa.me/254740513137?text=Hi!%20I%20need%20a%20graphic%20design%20service."
-            target="_blank" rel="noopener noreferrer"
-            class="flex-shrink-0 bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-md flex items-center gap-2 text-sm">
-            <i class="ph-fill ph-paint-brush"></i> Request Design
-          </a>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
-            <div class="text-3xl mb-2">🎨</div><p class="text-xs font-bold text-gray-800 dark:text-white">Posters</p>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
-            <div class="text-3xl mb-2">⭐</div><p class="text-xs font-bold text-gray-800 dark:text-white">Logos</p>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
-            <div class="text-3xl mb-2">🃏</div><p class="text-xs font-bold text-gray-800 dark:text-white">Business Cards</p>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
-            <div class="text-3xl mb-2">🏷️</div><p class="text-xs font-bold text-gray-800 dark:text-white">Banners</p>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
-            <div class="text-3xl mb-2">📱</div><p class="text-xs font-bold text-gray-800 dark:text-white">Social Flyers</p>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-xl p-4 text-center border border-pink-100 dark:border-gray-700 hover:-translate-y-1 transition">
-            <div class="text-3xl mb-2">📦</div><p class="text-xs font-bold text-gray-800 dark:text-white">More…</p>
-          </div>
-        </div>
-      </div>
-    </section>
+      
 
     <!-- ═══ CCTV INSTALLATION ═══════════════════════════════════════════════ -->
     <section id="cctv" class="scroll-mt-24">
@@ -544,22 +514,22 @@
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
-              <div class="text-3xl mb-3">🏠</div>
+              <div class="text-3xl mb-3"></div>
               <h4 class="text-white font-bold mb-1">Home CCTV</h4>
               <p class="text-gray-400 text-xs">Complete home security camera installation with mobile viewing.</p>
             </div>
             <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
-              <div class="text-3xl mb-3">🏢</div>
+              <div class="text-3xl mb-3"></div>
               <h4 class="text-white font-bold mb-1">Office Surveillance</h4>
               <p class="text-gray-400 text-xs">Comprehensive office &amp; business premises monitoring systems.</p>
             </div>
             <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
-              <div class="text-3xl mb-3">📡</div>
+              <div class="text-3xl mb-3"></div>
               <h4 class="text-white font-bold mb-1">Remote Monitoring</h4>
               <p class="text-gray-400 text-xs">View your cameras from anywhere via smartphone or PC.</p>
             </div>
             <div class="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition">
-              <div class="text-3xl mb-3">🔧</div>
+              <div class="text-3xl mb-3"></div>
               <h4 class="text-white font-bold mb-1">Maintenance &amp; Repair</h4>
               <p class="text-gray-400 text-xs">Fast repair, DVR/NVR configuration &amp; system upgrades.</p>
             </div>
@@ -568,65 +538,7 @@
       </div>
     </section>
 
-    <!-- ═══ PRICING ══════════════════════════════════════════════════════════ -->
-    <section id="pricing" class="scroll-mt-24">
-      <div class="text-center mb-10">
-        <span class="inline-block bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3">💰 Transparent Pricing</span>
-        <h2 class="text-2xl sm:text-3xl font-bold mb-2">Service Pricing</h2>
-        <p class="text-gray-600 dark:text-gray-400">Fair & affordable prices for all our services.</p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Printing -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition">
-          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center text-2xl mb-4"><i class="ph-fill ph-printer"></i></div>
-          <h3 class="font-bold text-lg mb-3">Printing</h3>
-          <div class="space-y-2">
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">B&W (A4)</span><span class="font-bold text-gray-900 dark:text-white">KES 5</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Color (A4)</span><span class="font-bold text-gray-900 dark:text-white">KES 30</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">B&W (A3)</span><span class="font-bold text-gray-900 dark:text-white">KES 20</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Color (A3)</span><span class="font-bold text-gray-900 dark:text-white">KES 60</span></div>
-          </div>
-        </div>
-        <!-- Scanning & Binding -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition">
-          <div class="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center text-2xl mb-4"><i class="ph-fill ph-scan"></i></div>
-          <h3 class="font-bold text-lg mb-3">Scanning &amp; Binding</h3>
-          <div class="space-y-2">
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Scan (per page)</span><span class="font-bold text-gray-900 dark:text-white">KES 10</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Spiral Binding</span><span class="font-bold text-gray-900 dark:text-white">KES 150</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Hard Cover</span><span class="font-bold text-gray-900 dark:text-white">KES 300</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Lamination</span><span class="font-bold text-gray-900 dark:text-white">KES 50</span></div>
-          </div>
-        </div>
-        <!-- Gaming — featured -->
-        <div class="pricing-featured rounded-2xl p-6 shadow-lg text-white relative overflow-hidden neon-green">
-          <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-          <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl mb-4">🎮</div>
-          <h3 class="font-bold text-lg mb-1">Gaming Hub</h3>
-          <p class="text-green-100 text-xs mb-4">PS5 · FIFA · COD · Racing</p>
-          <div class="space-y-2">
-            <div class="flex justify-between text-sm"><span class="text-green-100">Single Player/hr</span><span class="font-extrabold">KES 100</span></div>
-            <div class="flex justify-between text-sm"><span class="text-green-100">Multiplayer/hr</span><span class="font-extrabold">KES 150</span></div>
-            <div class="flex justify-between text-sm"><span class="text-green-100">All-Day (6hrs)</span><span class="font-extrabold">KES 400</span></div>
-          </div>
-          <a href="https://wa.me/254740513137?text=Hi!%20I%20want%20to%20book%20a%20gaming%20session."
-            target="_blank" class="mt-4 block text-center bg-white/20 hover:bg-white/30 text-white font-bold py-2 rounded-xl text-sm transition">Book Now</a>
-        </div>
-        <!-- Graphic Design -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition">
-          <div class="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-xl flex items-center justify-center text-2xl mb-4"><i class="ph-fill ph-paint-brush"></i></div>
-          <h3 class="font-bold text-lg mb-3">Graphic Design</h3>
-          <div class="space-y-2">
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Social Flyer</span><span class="font-bold text-gray-900 dark:text-white">KES 300</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Logo Design</span><span class="font-bold text-gray-900 dark:text-white">KES 1,000</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Business Card</span><span class="font-bold text-gray-900 dark:text-white">KES 500</span></div>
-            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Banner/Poster</span><span class="font-bold text-gray-900 dark:text-white">From KES 500</span></div>
-          </div>
-        </div>
-      </div>
-      <p class="text-center text-xs text-gray-500 dark:text-gray-400">* Prices may vary based on size, quantity, and complexity. <a href="https://wa.me/254740513137" target="_blank" class="text-brand-500 hover:underline">Chat with us</a> for custom quotes.</p>
-    </section>
+   
 
     <!-- PRODUCTS -->
     <section id="product" class="scroll-mt-24 bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700">
