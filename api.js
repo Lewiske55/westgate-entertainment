@@ -47,12 +47,6 @@ const APIService = {
     return data?.genres || data || [];
   },
 
-  async getTrending(timeWindow = 'day', page = 1) {
-    // timeWindow: 'day' or 'week'
-    const data = await this.fetchRaw(`/trending/all/${timeWindow}?api_key=${CONFIG.TMDB.API_KEY}&page=${page}`);
-    return { results: data?.results || [], totalPages: Math.min(data?.total_pages || 1, 500) };
-  },
-
   async getNowPlaying(page = 1) {
     const data = await this.fetchRaw(`/movie/now_playing?api_key=${CONFIG.TMDB.API_KEY}&page=${page}&region=KE`);
     return { results: data?.results || [], totalPages: Math.min(data?.total_pages || 1, 500) };

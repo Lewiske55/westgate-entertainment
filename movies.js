@@ -123,70 +123,115 @@ const WatchlistManager = {
 function renderPagination(containerId, currentPage, totalPages, onPageChange) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  if (totalPages <= 1) { el.innerHTML = ''; return; }
 
-  const maxVisible = 9;
-  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-  let end   = Math.min(totalPages, start + maxVisible - 1);
-  if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+  // Remember the latest params for this container so we can re-render responsively on resize
+  if (!window._paginationState) window._paginationState = {};
+  window._paginationState[containerId] = { currentPage, totalPages, onPageChange };
+
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
 
   // Store callback in a global map to avoid inline function serialization issues
   if (!window._paginationCallbacks) window._paginationCallbacks = {};
   const cbKey = 'pgcb_' + containerId.replace(/\W/g,'_');
   window._paginationCallbacks[cbKey] = onPageChange;
 
-  const mkBtn = (label, page, active = false, disabled = false) => {
+  // Responsive: fewer visible page buttons on narrow containers
+  const containerWidth = el.offsetWidth || window.innerWidth;
+  const isMobile  = containerWidth < 480;
+  const isNarrow  = containerWidth < 360;
+  const maxVisible = isNarrow ? 3 : isMobile ? 5 : 7;
+
+  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+  let end   = Math.min(totalPages, start + maxVisible - 1);
+  if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+
+  const mkBtn = (label, page, active = false, disabled = false, ariaLabel = '') => {
     const action = disabled ? 'return false' : `window._paginationCallbacks['${cbKey}'](${page})`;
-    return `<button onclick="${action}" class="min-w-[2rem] h-8 px-2 rounded-lg text-xs font-semibold transition
-      ${active   ? 'bg-brand-500 text-white shadow-md ring-2 ring-brand-500/30' : ''}
-      ${disabled ? 'opacity-30 cursor-not-allowed' : !active ? 'hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 cursor-pointer' : ''}">${label}</button>`;
+    const aria   = ariaLabel ? `aria-label="${ariaLabel}"` : '';
+    return `<button onclick="${action}" ${aria}
+      class="min-w-[2rem] h-9 px-2.5 rounded-lg text-xs font-semibold transition select-none
+        ${active   ? 'bg-brand-500 text-white shadow-md ring-2 ring-brand-500/30 scale-105' : ''}
+        ${disabled ? 'opacity-30 cursor-not-allowed' :
+                     !active ? 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 cursor-pointer active:scale-95' : ''}"
+      >${label}</button>`;
   };
 
+  const dot = '<span class="px-0.5 text-gray-400 text-xs self-center leading-none">…</span>';
   const jumpId = `jump_${containerId}`;
 
   let pages = '';
   if (start > 1) {
-    pages += mkBtn('1', 1);
-    if (start > 2) pages += '<span class="px-0.5 text-gray-400 text-xs self-center">…</span>';
+    pages += mkBtn('1', 1, false, false, 'First page');
+    if (start > 2) pages += dot;
   }
-  for (let p = start; p <= end; p++) pages += mkBtn(p, p, p === currentPage);
+  for (let p = start; p <= end; p++) {
+    pages += mkBtn(p, p, p === currentPage, false, `Page ${p}`);
+  }
   if (end < totalPages) {
-    if (end < totalPages - 1) pages += '<span class="px-0.5 text-gray-400 text-xs self-center">…</span>';
-    pages += mkBtn(totalPages, totalPages);
+    if (end < totalPages - 1) pages += dot;
+    pages += mkBtn(totalPages, totalPages, false, false, 'Last page');
   }
 
+  // On very narrow screens hide the jump-to row; show a compact "X / Y" instead
+  const jumpRow = isMobile ? `
+    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 flex-wrap justify-center">
+      <span>Page <strong class="text-gray-900 dark:text-white">${currentPage}</strong> / <strong class="text-gray-900 dark:text-white">${totalPages}</strong></span>
+      <span class="flex items-center gap-1">
+        <input id="${jumpId}" type="number" min="1" max="${totalPages}" placeholder="…"
+          onkeydown="if(event.key==='Enter'){var v=parseInt(this.value);if(v>=1&&v<=${totalPages})window._paginationCallbacks['${cbKey}'](v);}"
+          class="w-12 px-2 py-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs text-center focus:border-brand-500 outline-none">
+        <button onclick="var v=parseInt(document.getElementById('${jumpId}').value);if(v>=1&&v<=${totalPages})window._paginationCallbacks['${cbKey}'](v);"
+          class="px-2.5 py-1 rounded-md bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-semibold transition">Go</button>
+      </span>
+    </div>` : `
+    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+      <span>Page <strong class="text-gray-900 dark:text-white">${currentPage}</strong> of <strong class="text-gray-900 dark:text-white">${totalPages}</strong></span>
+      <span class="text-gray-300 dark:text-gray-600">|</span>
+      <span class="flex items-center gap-1.5">Go to:
+        <input id="${jumpId}" type="number" min="1" max="${totalPages}" placeholder="${currentPage}"
+          onkeydown="if(event.key==='Enter'){var v=parseInt(this.value);if(v>=1&&v<=${totalPages})window._paginationCallbacks['${cbKey}'](v);}"
+          class="w-16 px-2 py-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs focus:border-brand-500 outline-none">
+        <button onclick="var v=parseInt(document.getElementById('${jumpId}').value);if(v>=1&&v<=${totalPages})window._paginationCallbacks['${cbKey}'](v);"
+          class="px-2.5 py-1 rounded-md bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-semibold transition">Go</button>
+      </span>
+    </div>`;
+
   el.innerHTML = `
-    <div class="flex flex-col items-center gap-3 mt-8">
-      <div class="flex items-center gap-1 flex-wrap justify-center">
-        ${mkBtn('«', 1, false, currentPage === 1)}
-        ${mkBtn('‹', currentPage - 1, false, currentPage === 1)}
+    <div class="flex flex-col items-center gap-3 mt-8 w-full px-2">
+      <div class="flex items-center gap-1 flex-wrap justify-center max-w-full">
+        ${mkBtn('«', 1,               false, currentPage === 1,         'Go to first page')}
+        ${mkBtn('‹', currentPage - 1, false, currentPage === 1,         'Previous page')}
         ${pages}
-        ${mkBtn('›', currentPage + 1, false, currentPage === totalPages)}
-        ${mkBtn('»', totalPages, false, currentPage === totalPages)}
+        ${mkBtn('›', currentPage + 1, false, currentPage === totalPages, 'Next page')}
+        ${mkBtn('»', totalPages,       false, currentPage === totalPages, 'Go to last page')}
       </div>
-      <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-        <span>Page <strong class="text-gray-900 dark:text-white">${currentPage}</strong> of <strong class="text-gray-900 dark:text-white">${totalPages}</strong></span>
-        <span class="text-gray-300 dark:text-gray-600">|</span>
-        <span class="flex items-center gap-1">Go to:
-          <input id="${jumpId}" type="number" min="1" max="${totalPages}" placeholder="${currentPage}"
-            onkeydown="if(event.key==='Enter'){var v=parseInt(this.value);if(v>=1&&v<=${totalPages})window._paginationCallbacks['${cbKey}'](v);}"
-            class="w-16 px-2 py-0.5 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-xs focus:border-brand-500 outline-none">
-          <button onclick="var v=parseInt(document.getElementById('${jumpId}').value);if(v>=1&&v<=${totalPages})window._paginationCallbacks['${cbKey}'](v);"
-            class="px-2 py-0.5 rounded-md bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold transition">Go</button>
-        </span>
-      </div>
+      ${jumpRow}
     </div>`;
 }
+
+// Re-render all visible pagination bars on resize (debounced) so the button
+// count adapts if the viewport/container width changes (rotate, resize, etc.)
+(function () {
+  let resizeTimeout = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (!window._paginationState) return;
+      Object.entries(window._paginationState).forEach(([containerId, state]) => {
+        const el = document.getElementById(containerId);
+        // Skip containers that are hidden (inactive tab) or have no pages
+        if (!el || el.offsetParent === null || state.totalPages <= 1) return;
+        renderPagination(containerId, state.currentPage, state.totalPages, state.onPageChange);
+      });
+    }, 200);
+  });
+})();
 
 // ─── Content Manager ──────────────────────────────────────────────────────────
 const ContentManager = {
   state: {
     moviePage: 1, movieTotalPages: 1, movieGenre: null,
     tvPage: 1,    tvTotalPages: 1,    tvGenre: null,
-    nowPage: 1,   nowTotalPages: 1,
-    upcomingPage: 1, upcomingTotalPages: 1,
-    trendingPage: 1, trendingTotalPages: 1, trendingWindow: 'day',
-    activeTab: 'trending',
     searchQuery: '', searchTimeout: null,
     movieGenres: [], tvGenres: []
   },
@@ -196,7 +241,6 @@ const ContentManager = {
     this.renderServices();
     WatchlistManager.initModal();
     this.loadGenres();
-    this.initNowShowingSection();
   },
 
   async loadGenres() {
@@ -209,180 +253,40 @@ const ContentManager = {
     }
   },
 
-  initNowShowingSection() {
-    const moviesSection = document.getElementById('movies');
-    if (!moviesSection) return;
-    const section = document.createElement('section');
-    section.id = 'nowshowing';
-    section.className = 'scroll-mt-24';
-    section.innerHTML = `
-      <div class="flex items-center gap-3 mb-5 flex-wrap">
-        <button id="tabTrending" onclick="ContentManager.switchCinemaTab('trending')"
-          class="cinema-tab text-2xl sm:text-3xl font-bold flex items-center gap-2 text-gray-900 dark:text-white transition-opacity">
-          <i class="ph-fill ph-fire text-orange-500"></i> Trending
-        </button>
-        <span class="text-gray-300 dark:text-gray-600 text-2xl font-thin">|</span>
-        <button id="tabNowPlaying" onclick="ContentManager.switchCinemaTab('now')"
-          class="cinema-tab opacity-40 text-2xl sm:text-3xl font-bold flex items-center gap-2 text-gray-900 dark:text-white transition-opacity">
-          <i class="ph-fill ph-film-slate text-brand-500"></i> Now Showing
-        </button>
-        <span class="text-gray-300 dark:text-gray-600 text-2xl font-thin">|</span>
-        <button id="tabUpcoming" onclick="ContentManager.switchCinemaTab('upcoming')"
-          class="cinema-tab opacity-40 text-2xl sm:text-3xl font-bold flex items-center gap-2 text-gray-900 dark:text-white transition-opacity">
-          <i class="ph-fill ph-calendar-star text-purple-500"></i> Coming Soon
-        </button>
-      </div>
-      <div id="trendingControls" class="flex items-center gap-2 mb-5">
-        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Window:</span>
-        <button id="trendingDay" onclick="ContentManager.setTrendingWindow('day')"
-          class="px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white transition">Today</button>
-        <button id="trendingWeek" onclick="ContentManager.setTrendingWindow('week')"
-          class="px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-orange-500 hover:text-orange-500 transition">This Week</button>
-      </div>
-      <div id="trendingList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"></div>
-      <div id="trendingLoader" class="loader hidden"></div>
-      <div id="trendingPagination"></div>
-      <div id="nowShowingList" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"></div>
-      <div id="nowShowingLoader" class="loader hidden"></div>
-      <div id="nowShowingPagination" class="hidden"></div>
-      <div id="upcomingList" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"></div>
-      <div id="upcomingLoader" class="loader hidden"></div>
-      <div id="upcomingPagination" class="hidden"></div>`;
-    moviesSection.parentNode.insertBefore(section, moviesSection);
-    this.loadTrending(true);
-  },
-
-  async switchCinemaTab(tab) {
-    this.state.activeTab = tab;
-    const tabs = { trending: 'tabTrending', now: 'tabNowPlaying', upcoming: 'tabUpcoming' };
-    Object.entries(tabs).forEach(([key, id]) => {
-      document.getElementById(id)?.classList.toggle('opacity-40', key !== tab);
-    });
-    const panels = {
-      trending: ['trendingControls','trendingList','trendingPagination'],
-      now:      ['nowShowingList','nowShowingPagination'],
-      upcoming: ['upcomingList','upcomingPagination']
-    };
-    Object.entries(panels).forEach(([key, ids]) => {
-      ids.forEach(id => document.getElementById(id)?.classList.toggle('hidden', key !== tab));
-    });
-    if (tab === 'now' && document.getElementById('nowShowingList').children.length === 0) await this.loadNowShowing(true);
-    if (tab === 'upcoming' && document.getElementById('upcomingList').children.length === 0) await this.loadUpcoming(true);
-  },
-
-  async setTrendingWindow(win) {
-    this.state.trendingWindow = win;
-    document.getElementById('trendingDay').className = `px-3 py-1 rounded-full text-xs font-bold transition ${win === 'day' ? 'bg-orange-500 text-white' : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-orange-500 hover:text-orange-500'}`;
-    document.getElementById('trendingWeek').className = `px-3 py-1 rounded-full text-xs font-bold transition ${win === 'week' ? 'bg-orange-500 text-white' : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-orange-500 hover:text-orange-500'}`;
-    await this.loadTrending(true);
-  },
-
-  async loadTrending(clear = false) {
-    if (clear) this.state.trendingPage = 1;
-    UI.loader.show('trendingLoader');
-    const { results, totalPages } = await APIService.getTrending(this.state.trendingWindow, this.state.trendingPage);
-    this.state.trendingTotalPages = totalPages;
-    UI.loader.hide('trendingLoader');
-    const mapped = results.map(item => ({ ...item, _type: item.media_type === 'tv' ? 'tv' : 'movie' }));
-    this.renderTrendingItems(mapped, 'trendingList', clear);
-    renderPagination('trendingPagination', this.state.trendingPage, totalPages, (p) => {
-      ContentManager.state.trendingPage = p; ContentManager.loadTrending(true);
-      document.getElementById('nowshowing')?.scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  },
-
-  renderTrendingItems(items, containerId, clear = false) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    if (clear) container.innerHTML = '';
-    if (items.length === 0 && clear) {
-      container.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-16">No results found.</p>';
-      return;
-    }
-    items.forEach((item, index) => {
-      const card = this.createCard(item, item._type || 'movie');
-      if (index < 10) {
-        const rankBadge = document.createElement('div');
-        rankBadge.className = 'absolute bottom-2 left-2 w-7 h-7 bg-orange-500 text-white text-xs font-black rounded-full flex items-center justify-center shadow-lg z-10';
-        rankBadge.textContent = (this.state.trendingPage - 1) * 20 + index + 1;
-        card.querySelector('.relative.overflow-hidden')?.appendChild(rankBadge);
-      }
-      const typeBadge = document.createElement('div');
-      typeBadge.className = `absolute top-2 left-2 text-white text-[10px] font-bold px-1.5 py-0.5 rounded ${item._type === 'tv' ? 'bg-blue-600' : 'bg-gray-900/80'}`;
-      typeBadge.textContent = item._type === 'tv' ? 'TV' : 'Film';
-      card.querySelector('.relative.overflow-hidden')?.appendChild(typeBadge);
-      container.appendChild(card);
-    });
-  },
-
-  async loadNowShowing(clear = false) {
-    if (clear) this.state.nowPage = 1;
-    UI.loader.show('nowShowingLoader');
-    const { results, totalPages } = await APIService.getNowPlaying(this.state.nowPage);
-    this.state.nowTotalPages = totalPages;
-    UI.loader.hide('nowShowingLoader');
-    this.renderItems(results, 'nowShowingList', 'movie', clear);
-    renderPagination('nowShowingPagination', this.state.nowPage, totalPages, (p) => {
-      ContentManager.state.nowPage = p; ContentManager.loadNowShowing(true);
-      document.getElementById('nowshowing')?.scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  },
-
-  async loadUpcoming(clear = false) {
-    if (clear) this.state.upcomingPage = 1;
-    UI.loader.show('upcomingLoader');
-    const { results, totalPages } = await APIService.getUpcoming(this.state.upcomingPage);
-    this.state.upcomingTotalPages = totalPages;
-    UI.loader.hide('upcomingLoader');
-    this.renderItems(results, 'upcomingList', 'movie', clear);
-    results.forEach(item => {
-      if (!item.release_date) return;
-      const card = document.querySelector(`#upcomingList [data-item-id="${item.id}"]`);
-      if (!card) return;
-      const badge = document.createElement('div');
-      badge.className = 'absolute bottom-0 left-0 right-0 bg-purple-600/90 text-white text-xs font-bold px-2 py-1 text-center backdrop-blur-sm';
-      const d = new Date(item.release_date);
-      badge.textContent = d.toLocaleDateString('en-KE', { day:'numeric', month:'short', year:'numeric' });
-      card.querySelector('.relative.overflow-hidden')?.appendChild(badge);
-    });
-    renderPagination('upcomingPagination', this.state.upcomingPage, totalPages, (p) => {
-      ContentManager.state.upcomingPage = p; ContentManager.loadUpcoming(true);
-      document.getElementById('nowshowing')?.scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  },
-
-  async loadMovies(clear = false) {
-    if (clear) this.state.moviePage = 1;
+  async loadMovies(resetPage = false, append = false) {
+    if (resetPage) this.state.moviePage = 1;
     UI.loader.show('movieLoader');
     const { results, totalPages } = this.state.movieGenre
       ? await APIService.getMoviesByGenre(this.state.movieGenre, this.state.moviePage)
       : await APIService.getPopularMovies(this.state.moviePage);
     this.state.movieTotalPages = totalPages;
     UI.loader.hide('movieLoader');
-    this.renderItems(results, 'movieList', 'movie', clear);
+    this.renderItems(results, 'movieList', 'movie', !append);
     renderPagination('moviePagination', this.state.moviePage, totalPages, (p) => {
-      ContentManager.state.moviePage = p; ContentManager.loadMovies(true);
+      ContentManager.state.moviePage = p;
+      ContentManager.loadMovies(false); // keep the page we just navigated to, don't reset to 1
       document.getElementById('movies')?.scrollIntoView({ behavior:'smooth', block:'start' });
     });
   },
 
-  async loadTV(clear = false) {
-    if (clear) this.state.tvPage = 1;
+  async loadTV(resetPage = false, append = false) {
+    if (resetPage) this.state.tvPage = 1;
     UI.loader.show('tvLoader');
     const { results, totalPages } = this.state.tvGenre
       ? await APIService.getTVByGenre(this.state.tvGenre, this.state.tvPage)
       : await APIService.getPopularTV(this.state.tvPage);
     this.state.tvTotalPages = totalPages;
     UI.loader.hide('tvLoader');
-    this.renderItems(results, 'tvList', 'tv', clear);
+    this.renderItems(results, 'tvList', 'tv', !append);
     renderPagination('tvPagination', this.state.tvPage, totalPages, (p) => {
-      ContentManager.state.tvPage = p; ContentManager.loadTV(true);
+      ContentManager.state.tvPage = p;
+      ContentManager.loadTV(false); // keep the page we just navigated to, don't reset to 1
       document.getElementById('tvseries')?.scrollIntoView({ behavior:'smooth', block:'start' });
     });
   },
 
-  loadMoreMovies() { this.state.moviePage++; this.loadMovies(); },
-  loadMoreTV()     { this.state.tvPage++;     this.loadTV();     },
+  loadMoreMovies() { this.state.moviePage++; this.loadMovies(false, true); },
+  loadMoreTV()     { this.state.tvPage++;     this.loadTV(false, true);     },
 
   handleSearch(query) {
     clearTimeout(this.state.searchTimeout);

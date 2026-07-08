@@ -44,7 +44,20 @@ const MovieDetailManager = {
     try {
       const details = await APIService.getMovieDetails(id, type);
       if (!details) throw new Error('No details returned');
-      this.render(details, type);
+
+      // Cross-type recommendations: e.g. for a movie, pull TV series sharing its
+      // top genres (and vice versa), so the modal recommends both movies & TV series.
+      const crossType = type === 'movie' ? 'tv' : 'movie';
+      const genreIds = (details.genres || []).slice(0, 2).map(g => g.id).join(',');
+      let crossRecs = [];
+      if (genreIds) {
+        const crossData = crossType === 'tv'
+          ? await APIService.getTVByGenre(genreIds, 1)
+          : await APIService.getMoviesByGenre(genreIds, 1);
+        crossRecs = (crossData.results || []).map(r => ({ ...r, media_type: crossType }));
+      }
+
+      this.render(details, type, crossRecs);
     } catch (err) {
       console.error('Detail error:', err);
       content.innerHTML = `
@@ -56,7 +69,7 @@ const MovieDetailManager = {
     }
   },
 
-  render(d, type) {
+  render(d, type, crossRecs = []) {
     const title = d.title || d.name || 'Unknown';
     const year  = (d.release_date || d.first_air_date || '').substring(0, 4) || '—';
     const backdrop = d.backdrop_path
@@ -70,8 +83,36 @@ const MovieDetailManager = {
     const genres  = (d.genres || []).map(g => g.name).join(', ') || '—';
     const overview = d.overview || 'No synopsis available.';
 
+    // TV-only: seasons / episodes count + status (Returning Series, Ended, etc.)
+    const isTV = type === 'tv';
+    const seasonCount   = d.number_of_seasons;
+    const episodeCount  = d.number_of_episodes;
+    const seasonsEpisodesLabel = isTV && (seasonCount || episodeCount)
+      ? [
+          seasonCount  ? `${seasonCount} Season${seasonCount === 1 ? '' : 's'}` : null,
+          episodeCount ? `${episodeCount} Episode${episodeCount === 1 ? '' : 's'}` : null
+        ].filter(Boolean).join(' • ')
+      : '';
+    const showStatus = isTV && d.status ? d.status : '';
+
+    // Per-season breakdown (skip "Specials" season 0 unless it's the only one)
+    const seasonsList = (isTV && Array.isArray(d.seasons))
+      ? d.seasons.filter(s => s.season_number !== 0 || d.seasons.length === 1)
+      : [];
+
     // Cast — top 8
     const cast = (d.credits?.cast || []).slice(0, 8);
+
+    // Recommendations — mix of same-type "similar" titles (TMDB similar endpoint) and
+    // cross-type titles sharing genres, so movies recommend TV series and vice versa.
+    const sameTypeRecs = (d.similar?.results || [])
+      .filter(r => r.poster_path)
+      .map(r => ({ ...r, media_type: type }))
+      .slice(0, 8);
+    const crossTypeRecs = crossRecs
+      .filter(r => r.poster_path && r.id !== d.id)
+      .slice(0, 6);
+    const recs = [...sameTypeRecs, ...crossTypeRecs];
 
     // Find trailer key
     const videos = d.videos?.results || [];
@@ -95,6 +136,60 @@ const MovieDetailManager = {
                   <p class="text-xs font-medium text-gray-800 dark:text-white leading-tight line-clamp-2">${actor.name}</p>
                   <p class="text-xs text-gray-500 dark:text-gray-400 leading-tight line-clamp-1">${actor.character || ''}</p>
                 </div>`;
+            }).join('')}
+          </div>
+        </div>`
+      : '';
+
+    const seasonsHTML = seasonsList.length
+      ? `<div class="mt-5">
+          <h4 class="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Seasons</h4>
+          <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+            ${seasonsList.map(s => {
+              const poster = s.poster_path
+                ? `${CONFIG.TMDB.IMAGE_URL}${s.poster_path}`
+                : CONFIG.TMDB.PLACEHOLDER_IMAGE;
+              const epCount = typeof s.episode_count === 'number' ? `${s.episode_count} ep${s.episode_count === 1 ? '' : 's'}` : '';
+              return `
+                <div class="flex-shrink-0 w-24 text-center">
+                  <img src="${poster}" alt="${s.name}" onerror="this.src='${CONFIG.TMDB.PLACEHOLDER_IMAGE}'"
+                    class="w-24 h-36 object-cover rounded-lg mb-1 border border-gray-200 dark:border-gray-700">
+                  <p class="text-xs font-semibold text-gray-800 dark:text-white leading-tight line-clamp-1">${s.name}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 leading-tight">${epCount}</p>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>`
+      : '';
+
+    const recsHTML = recs.length
+      ? `<div class="mt-5">
+          <h4 class="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">You Might Also Like</h4>
+          <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+            ${recs.map(r => {
+              const rType   = r.media_type || type;
+              const rTitle  = r.title || r.name || 'Unknown';
+              const rPoster = r.poster_path ? `${CONFIG.TMDB.IMAGE_URL}${r.poster_path}` : CONFIG.TMDB.PLACEHOLDER_IMAGE;
+              const rYear   = (r.release_date || r.first_air_date || '').substring(0, 4);
+              const rRating = r.vote_average ? r.vote_average.toFixed(1) : null;
+              const rBadge  = rType === 'tv'
+                ? '<span class="text-[9px] font-bold bg-blue-600 text-white px-1 py-0.5 rounded">TV</span>'
+                : '<span class="text-[9px] font-bold bg-gray-700 text-white px-1 py-0.5 rounded">Film</span>';
+              return `
+                <button onclick="MovieDetailManager.open(${r.id}, '${rType}')"
+                  class="flex-shrink-0 w-28 text-left group">
+                  <div class="relative">
+                    <img src="${rPoster}" alt="${rTitle}" onerror="this.src='${CONFIG.TMDB.PLACEHOLDER_IMAGE}'"
+                      class="w-28 h-40 object-cover rounded-lg mb-1 border border-gray-200 dark:border-gray-700 group-hover:border-brand-500 transition">
+                    <div class="absolute top-1 left-1">${rBadge}</div>
+                    ${rRating ? `
+                      <span class="absolute top-1 right-1 inline-flex items-center gap-0.5 ${UI.ratingBadgeColor(r.vote_average)} text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">
+                        <i class="ph-fill ph-star text-[9px]"></i>${rRating}
+                      </span>` : ''}
+                  </div>
+                  <p class="text-xs font-semibold text-gray-800 dark:text-white leading-tight line-clamp-2 group-hover:text-brand-500 transition">${rTitle}</p>
+                  ${rYear ? `<p class="text-xs text-gray-500 dark:text-gray-400 leading-tight">${rYear}</p>` : ''}
+                </button>`;
             }).join('')}
           </div>
         </div>`
@@ -131,9 +226,15 @@ const MovieDetailManager = {
             <div class="flex flex-wrap items-center gap-2 mt-2">
               <span class="text-sm text-gray-500 dark:text-gray-400">${year}</span>
               ${runtime ? `<span class="text-gray-300 dark:text-gray-600">•</span><span class="text-sm text-gray-500 dark:text-gray-400">${runtime}</span>` : ''}
+              ${seasonsEpisodesLabel ? `
+                <span class="text-gray-300 dark:text-gray-600">•</span>
+                <span class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                  <i class="ph-fill ph-television-simple text-xs"></i> ${seasonsEpisodesLabel}
+                </span>` : ''}
               <span class="inline-flex items-center gap-1 ${UI.ratingBadgeColor(d.vote_average)} text-white text-xs font-bold px-2 py-0.5 rounded-md">
                 <i class="ph-fill ph-star text-xs"></i> ${rating}
               </span>
+              ${showStatus ? `<span class="text-[10px] font-bold uppercase tracking-wide bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md">${showStatus}</span>` : ''}
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${genres}</p>
           </div>
@@ -145,7 +246,9 @@ const MovieDetailManager = {
           <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${overview}</p>
         </div>
 
+        ${seasonsHTML}
         ${castHTML}
+        ${recsHTML}
 
         <!-- Action buttons -->
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
